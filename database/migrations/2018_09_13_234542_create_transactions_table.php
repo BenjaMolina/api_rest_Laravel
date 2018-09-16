@@ -13,7 +13,7 @@ class CreateTransaccionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('transaccions', function (Blueprint $table) {
+        Schema::create('transactions', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
         });
