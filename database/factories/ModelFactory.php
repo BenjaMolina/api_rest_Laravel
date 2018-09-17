@@ -1,5 +1,8 @@
 <?php
 
+use App\User;
+use App\Category;
+
 /*
 |--------------------------------------------------------------------------
 | Model Factories
@@ -12,13 +15,20 @@
 */
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(App\User::class, function (Faker\Generator $faker) {
+$factory->define(User::class, function (Faker\Generator $faker) {
     static $password;
+
+    $verificado = $faker->randomElement([User::USUARIO_VERIFICADO,User::USUARIO_NO_VERIFICADO]);
 
     return [
         'name' => $faker->name,
         'email' => $faker->unique()->safeEmail,
         'password' => $password ?: $password = bcrypt('secret'),
         'remember_token' => str_random(10),
+        'verified' => $verificado,
+        'verification_token' => $verificado == User::USUARIO_VERIFICADO ? null : User::generarVerificationToken(),
+        'admin' => $faker->randomElement([User::USUARIO_ADMINISTRADOR, User::USUARIO_REGULAR]),
     ];
 });
+
+
