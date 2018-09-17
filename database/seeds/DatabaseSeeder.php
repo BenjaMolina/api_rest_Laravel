@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 use App\User;
 use App\Category;
@@ -19,14 +20,14 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         //desactivamos la verificacion de las llaves foraneas
-        DB::statement('SET FOREIGN_KEYS_CHECKS = 0');
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
 
         //Eliminamos todos los registros de cada tabal
         User::truncate();
         Category::truncate();
         Transaction::truncate();
         Product::truncate();
-        DB:table('category_product')->truncate();
+        DB::table('category_product')->truncate();
 
         //Llamamos a los factories 
         $cantidadUsuarios = 200;
@@ -39,7 +40,7 @@ class DatabaseSeeder extends Seeder
 
         //Creamos los productos y le asignamos unas categorias
         factory(Product::class, $cantidadProductos)->create()->each(
-            function($product){
+            function($producto){
                 $categorias = Category::all()->random(mt_rand(1,5))->pluck('id');
                 
                 $producto->categories()->attach($categorias);
