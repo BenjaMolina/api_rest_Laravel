@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 
 use App\User;
 
-class UserController extends Controller
+class UserController extends ApiController
 {
     /**
      * Display a listing of the resource.

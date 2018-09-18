@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 
 use App\Buyer;
 
-class BuyerController extends Controller
+class BuyerController extends ApiController
 {
     /**
      * Display a listing of the resource.
