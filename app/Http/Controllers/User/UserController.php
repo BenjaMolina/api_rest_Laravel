@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 
 use App\User;
 
@@ -18,9 +18,7 @@ class UserController extends ApiController
     {
         $users = User::all();
 
-        return response()->json([
-            'data' => $users
-        ],200);
+        return $this->showAll($users);
     }
 
     /**
@@ -48,9 +46,7 @@ class UserController extends ApiController
 
         $user = User::create($campos);
 
-        return response()->json([
-            'data' => $user
-        ],201);
+        return $this->showOne($user,201);
     }
 
     /**
@@ -61,9 +57,7 @@ class UserController extends ApiController
      */
     public function show(User $user)
     {
-        return response()->json([
-            'data'=> $user
-        ],200);
+        return $this->showOne($user);
     }
 
     /**
@@ -101,26 +95,18 @@ class UserController extends ApiController
         //Si es admin, pero no esta verificado
         if($request->has('admin')){
             if(!$user->esVerficado()){
-                return response()->json([
-                    'error'=>'Unicamente los usuarios verificados pueden cambiar su valor de administrador',
-                    'code' => 409
-                ],409);
+                return $this->errorResponse('Unicamente los usuarios verificados pueden cambiar su valor de administrador',409);
             }
         }
 
         //Si no ha hecho cambios para actualizar
         if(!$user->isDirty()){
-            return response()->json([
-                'error'=>'Se debe especificar almenos un valor diferente para actualizar',
-                'code' => 422
-            ],422);
+            return $this->errorResponse('Se debe especificar almenos un valor diferente para actualizar',422);
         }
 
         $user->save();
 
-        return response()->json([
-            'data' => $user,
-        ],200);
+        return $this->showOne($user);
 
 
     }
@@ -135,8 +121,6 @@ class UserController extends ApiController
     {
         $user->delete();
 
-        return response()->json([
-            'data' => $user,
-        ],200);
+        return $this->showOne($user);
     }
 }
