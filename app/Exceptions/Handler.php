@@ -10,6 +10,7 @@ use App\Traits\ApiResponser;
 
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class Handler extends ExceptionHandler
 {
@@ -61,6 +62,10 @@ class Handler extends ExceptionHandler
 
         if ($exception instanceof AuthenticationException) {
             return $this->unauthenticated($request, $e);
+        }
+
+        if($exception instanceof AuthorizationException ){
+            return $this->errorResponse("No posee los permisos suficientes para realizar la accion",403) ;
         }
 
 
