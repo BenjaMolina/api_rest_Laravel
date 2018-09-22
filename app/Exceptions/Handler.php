@@ -93,10 +93,13 @@ class Handler extends ExceptionHandler
                 return $this->errorResponse('No se puede eliminar el recurso, debido a que esta relacionado con otro recurso',409);
             }
         }
+        
 
+        if(config('app.debug')){
+            return parent::render($request,$exception);
+        }
 
-
-        return parent::render($request, $exception);
+        return $this->errorResponse('Falla inesperada. Intente mas tarde',500);
     }
 
     /**
