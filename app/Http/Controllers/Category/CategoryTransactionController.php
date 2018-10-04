@@ -19,6 +19,7 @@ class CategoryTransactionController extends ApiController
                             //que contengan esta relacion
                             //para que no vayan vacios
                             ->has('transactions') //whereHas('transactions')
+                            ->with('transactions')
                             ->get()
                             ->pluck('transactions')
                             ->collapse()
