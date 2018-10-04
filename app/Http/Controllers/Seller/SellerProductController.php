@@ -6,6 +6,9 @@ use App\Seller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
 
+use App\User;
+use App\Product;
+
 class SellerProductController extends ApiController
 {
     /**
@@ -27,9 +30,26 @@ class SellerProductController extends ApiController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, User $seller)
     {
-        //
+        $this->validate($request,[
+            'name' => 'required',
+            'description' => 'required',
+            'quantity' => 'required|integer|min:1',
+            'image' => 'required|image',
+            // 'status',
+            // 'seller_id',
+        ]);
+
+        $data = $request->all();
+
+        $data['status'] = Product::PRODUCT_NO_DISPONIBLE;
+        $data['image'] = '1.jpg';
+        $data['seller_id'] = $seller->id;
+
+        $product = Product::create($data);
+
+        return $this->showOne($product,201);
     }
 
 
