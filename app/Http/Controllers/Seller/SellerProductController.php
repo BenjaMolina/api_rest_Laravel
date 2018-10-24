@@ -6,6 +6,8 @@ use App\Seller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
 
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
 use App\User;
 use App\Product;
 
@@ -70,10 +72,11 @@ class SellerProductController extends ApiController
         ]);
 
         //Verificamos que sean el mismo ID
-        if($seller->id != $product->seller_id)
-        {
-            return $this->errorResponse('El vendedor espicificado no es el vendedor real del producto',422);
-        }
+        $this->verificarVendedor($seller, $product);
+        // if($seller->id != $product->seller_id)
+        // {
+        //     return $this->errorResponse('El vendedor espicificado no es el vendedor real del producto',422);
+        // }
 
         $product->fill($request->intersect([
             'name',
@@ -109,8 +112,20 @@ class SellerProductController extends ApiController
      * @param  \App\Seller  $seller
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Seller $seller)
+    public function destroy(Seller $seller, Product $product)
     {
-        //
+        $this->verificarVendedor($seller, $product);
+
+        $product->delete();
+
+        return $this->showOne($product);
+    }
+
+    private function verificarVendedor(Seller $seller, Product $product)
+    {
+        if($seller->id != $product->seller_id)
+        {
+            throw new HttpException(422, 'El vendedor espicificado no es el vendedor real del producto');
+        }
     }
 }
