@@ -60,9 +60,47 @@ class SellerProductController extends ApiController
      * @param  \App\Seller  $seller
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Seller $seller)
+    public function update(Request $request, Seller $seller, Product $product)
     {
-        //
+        
+        $this->validate($request,[
+            'quantity' => 'integer|min:1',
+            'status' => 'in:'.Product::PRODUCT_DISPONIBLE . ','. Product::PRODUCT_NO_DISPONIBLE,
+            'image' => 'image',
+        ]);
+
+        //Verificamos que sean el mismo ID
+        if($seller->id != $product->seller_id)
+        {
+            return $this->errorResponse('El vendedor espicificado no es el vendedor real del producto',422);
+        }
+
+        $product->fill($request->intersect([
+            'name',
+            'description',
+            'quantity'
+        ]));
+
+        if($request->has('status'))
+        {
+            
+            $product->status = $request->status;
+
+            if($product->estaDisponible() && $product->categories()->count() == 0){
+                return $this->errorResponse('Un producto activo debe tener al menos una categoria asociada',409);
+            }
+        }
+
+        if($product->isClean())
+        {
+            return $this->errorResponse('Se debe especificar al  menos un valor diferente para actualizar', 422);
+        }
+
+        $product->save();
+
+        return $this->showOne($product);
+
+
     }
 
     /**
