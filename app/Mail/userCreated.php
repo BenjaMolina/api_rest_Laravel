@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -30,6 +31,6 @@ class userCreated extends Mailable
      */
     public function build()
     {
-        return $this->text('emails.welcome');
+        return $this->text('emails.welcome')->subject('Por favor verifica tu correo');
     }
 }
