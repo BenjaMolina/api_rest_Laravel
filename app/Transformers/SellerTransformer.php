@@ -15,13 +15,13 @@ class SellerTransformer extends TransformerAbstract
     public function transform(Seller $seller)
     {
         return [
-            'identifier' => (int)$$seller->id,
-            'nombre' => (string)$$seller->name,
-            'correo' => (string)$$seller->email,
-            'esVerificado' => (int)$$seller->verified,
-            'fechaCreacion' => (string)$$seller->created_at,
-            'fechaActualizacion' => (string)$$seller->updated_at,
-            'fechaEliminacion' => isset($$seller->deleted_at) ? (string)$$seller->deleted_at : null,
+            'identifier' => (int)$seller->id,
+            'nombre' => (string)$seller->name,
+            'correo' => (string)$seller->email,
+            'esVerificado' => (int)$seller->verified,
+            'fechaCreacion' => (string)$seller->created_at,
+            'fechaActualizacion' => (string)$seller->updated_at,
+            'fechaEliminacion' => isset($seller->deleted_at) ? (string)$seller->deleted_at : null,
         ];
     }
 }
