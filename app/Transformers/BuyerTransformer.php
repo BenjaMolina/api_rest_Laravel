@@ -27,7 +27,7 @@ class BuyerTransformer extends TransformerAbstract
 
     public static function originalAttribute($index)
     {
-        return [
+        $attributes =  [
             'identifier' => 'id',
             'nombre' => 'name',
             'correo' => 'email',
@@ -36,5 +36,7 @@ class BuyerTransformer extends TransformerAbstract
             'fechaActualizacion' => 'updated_at',
             'fechaEliminacion' => 'deleted_at',
         ];
+
+        return ( isset($attributes[$index]) ?  $attributes[$index] : null );
     }
 }

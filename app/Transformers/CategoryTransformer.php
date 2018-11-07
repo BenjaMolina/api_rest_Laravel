@@ -26,7 +26,7 @@ class CategoryTransformer extends TransformerAbstract
 
     public static function originalAttribute($index)
     {
-        return [
+        $attributes = [
             'identifier' => 'id',
             'titulo' => 'name',
             'detalle' => 'description',
@@ -34,5 +34,7 @@ class CategoryTransformer extends TransformerAbstract
             'fechaActualizacion' => 'updated_at',
             'fechaEliminacion' => 'deleted_at',
         ];
+
+        return ( isset($attributes[$index]) ?  $attributes[$index] : null );
     }
 }
