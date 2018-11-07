@@ -23,4 +23,16 @@ class CategoryTransformer extends TransformerAbstract
             'fechaEliminacion' => isset($category->deleted_at) ? (string)$category->deleted_at : null,
         ];
     }
+
+    public static function originalAttribute($index)
+    {
+        return [
+            'identifier' => 'id',
+            'titulo' => 'name',
+            'detalle' => 'description',
+            'fechaCreacion' => 'created_at',
+            'fechaActualizacion' => 'updated_at',
+            'fechaEliminacion' => 'deleted_at',
+        ];
+    }
 }

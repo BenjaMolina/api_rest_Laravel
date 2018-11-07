@@ -27,10 +27,14 @@ trait ApiResponser
             return $this->succesResponse(["data" => $collection],$code);
         }
 
+        
         /*Obtenemos el primer conjunto de la colleccion para despues
         obtener el valor del atributo $transformer del modelo*/
         $transformer = $collection->first()->transformer;
         
+        //Ordenamos la coleccion antes de ser transformada
+        $collection =  $this->sortData($collection);
+
         //Obtenemos los datos transformados usando el metodo nuevo
         $collection = $this->transformData($collection, $transformer);
 
@@ -58,5 +62,14 @@ trait ApiResponser
         $transformation = fractal($data, new $transformer);
         
         return $transformation->toArray();
+    }
+
+    protected function sortData(Collection $collection)
+    {
+        if(request()->has('sort_by')){
+            $attribute = request()->sort_by;
+            $collection = $collection->sortBy($attribute);
+        }
+        return $collection;
     }
 }
