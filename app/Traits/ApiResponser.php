@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -44,6 +45,9 @@ trait ApiResponser
 
         //Obtenemos los datos transformados usando el metodo nuevo
         $collection = $this->transformData($collection, $transformer);
+
+        //Gurdamos en cache la respuesta
+        $collection = $this->cacheResponse($collection);
 
         return $this->succesResponse($collection,$code);
     }
@@ -127,5 +131,23 @@ trait ApiResponser
         $paginated->appends(request()->all());
 
         return $paginated;
+    }
+
+    protected function cacheResponse($data){
+        //Obtenemos la url y los parametros
+        $url = request()->url();
+        $params = request()->all();
+
+        //Ordemamos los parametros y los convertimos en string
+        ksort($params);      
+        $paramString = http_build_query($params);
+
+        //Creamos la URL completa
+        $fullUrl = "$url?$paramString";
+
+        return Cache::remember($fullUrl, 15/60, function() use ($data) {
+            return $data;
+        });
+
     }
 }
