@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 trait ApiResponser
 {
@@ -33,9 +34,12 @@ trait ApiResponser
         
         //filtramos la colleccion de acuerdo a los parametros
         $collection =  $this->filterData($collection,$transformer);
-
+        
         //Ordenamos la coleccion antes de ser transformada
         $collection =  $this->sortData($collection, $transformer);
+        
+        //Paginamos la respuesta
+        $collection = $this->paginate($collection);
 
         //Obtenemos los datos transformados usando el metodo nuevo
         $collection = $this->transformData($collection, $transformer);
@@ -78,13 +82,42 @@ trait ApiResponser
     protected function filterData($collection, $transformer)
     {
         foreach (request()->all() as $attribute => $value) {
-            if($attribute != 'sort_by'){
-                $originalAttribute = $transformer::originalAttribute($attribute);
+            $originalAttribute = $transformer::originalAttribute($attribute);
+            
+            if(isset($originalAttribute, $value)){
                 $collection = $collection->where($originalAttribute,$value);
             }
             
         }
 
         return $collection;
+    }
+
+    protected function paginate(Collection $collection)
+    {
+        //Resuelve la pagina que nos encontramos (actual)
+        $page = LengthAwarePaginator::resolveCurrentPage();
+        
+        //Numero de elementos por pagina
+        $perPage = 15;
+        //Dividimos la coleccion ( inicio - fin ) 
+        $results = $collection->slice(( $page - 1) * $perPage,$perPage)->values();
+        
+
+        //Creamos la paginacion
+        $paginated = new LengthAwarePaginator(
+            $results, //datos a mostrar
+            $collection->count(), //Total de elementos
+            $perPage, //Elementos por pagina
+            $page, //Pagina actual
+            [ //Opciones
+                //Muestra pagina siguiente y anterior
+                'path' => LengthAwarePaginator::resolveCurrentPath(),
+            ]);
+
+        //Agregamos todos parametros pasados por URL
+        $paginated->appends(request()->all());
+
+        return $paginated;
     }
 }
