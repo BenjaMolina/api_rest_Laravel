@@ -27,14 +27,15 @@ trait ApiResponser
             return $this->succesResponse(["data" => $collection],$code);
         }
 
-        
         /*Obtenemos el primer conjunto de la colleccion para despues
         obtener el valor del atributo $transformer del modelo*/
         $transformer = $collection->first()->transformer;
         
+        //filtramos la colleccion de acuerdo a los parametros
+        $collection =  $this->filterData($collection,$transformer);
+
         //Ordenamos la coleccion antes de ser transformada
         $collection =  $this->sortData($collection, $transformer);
-        
 
         //Obtenemos los datos transformados usando el metodo nuevo
         $collection = $this->transformData($collection, $transformer);
@@ -71,6 +72,19 @@ trait ApiResponser
             $attribute = $transformer::originalAttribute(request()->sort_by);
             $collection = $collection->sortBy($attribute);
         }
+        return $collection;
+    }
+
+    protected function filterData($collection, $transformer)
+    {
+        foreach (request()->all() as $attribute => $value) {
+            if($attribute != 'sort_by'){
+                $originalAttribute = $transformer::originalAttribute($attribute);
+                $collection = $collection->where($originalAttribute,$value);
+            }
+            
+        }
+
         return $collection;
     }
 }
