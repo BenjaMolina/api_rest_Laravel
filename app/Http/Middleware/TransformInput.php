@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Validation\ValidationException;
 
 class TransformInput
 {
@@ -15,6 +16,7 @@ class TransformInput
      */
     public function handle($request, Closure $next, $transformer)
     {
+        /* Transformando inputs a valores originales */
         $transformedInput = [];
 
         //Obtenemos solo los atributos de los input
@@ -25,6 +27,24 @@ class TransformInput
         //Reemplazamos los atributos originales
         $request->replace($transformedInput);
 
-        return $next($request);
+
+        /* Tranformando de originales a tranformer */
+        $response = $next($request);
+
+        if(isset($response->exception) && $response->exception instanceof ValidationException){
+            $data = $response->getData();
+
+            $transformedErrors = [];
+            foreach ($data->error as $field => $error) {
+                $transformedField = $transformer::transformedAttribute($field);
+                $transformedErrors[$transformedField] = str_replace($field,$transformedField, $error);
+            }
+
+            $data->error = $transformedErrors;
+
+            $response->setData($data);
+        }
+
+        return $response;
     }
 }

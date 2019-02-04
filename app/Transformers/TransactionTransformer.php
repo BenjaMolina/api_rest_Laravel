@@ -69,6 +69,7 @@ class TransactionTransformer extends TransformerAbstract
 
     public static function transformedAttribute($index)
     {
+        
         $attributes = [
             'id' => 'identifier',
             'quantity' => 'cantidad',

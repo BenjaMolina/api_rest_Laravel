@@ -72,6 +72,7 @@ class SellerTransformer extends TransformerAbstract
 
     public static function transformedAttribute($index)
     {
+        
         $attributes = [
             'id' => 'identifier',
             'name' => 'nombre',
